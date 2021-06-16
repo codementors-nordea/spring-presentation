@@ -1,4 +1,4 @@
-package pl.infoshare.springintroduction.validation;
+package pl.infoshare.springintroduction.validation.exceptions;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,21 +10,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.stream.Collectors;
+
 @RestControllerAdvice
 public class GlobalExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InfoshareException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public SimpleError handleException(InfoshareException exception) {
-        return new SimpleError(exception.getMessage(), exception.getErrorCode());
+    public ErrorResponse handleException(InfoshareException exception) {
+        return ErrorResponse.singleError(new SimpleError(exception.getMessage(), exception.getErrorCode()), 400);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return ResponseEntity.badRequest()
-                .body(new SimpleError(
-                        ex.getFieldError().getDefaultMessage(),
-                        ex.getNestedPath() // calculate proper error code
-                ));
+        var errors = ex.getFieldErrors()
+                .stream()
+                .map(fieldError -> new SimpleError(fieldError.getField() + " " + fieldError.getDefaultMessage(), fieldError.getCode()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse(400, errors));
     }
 }

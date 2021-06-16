@@ -1,4 +1,4 @@
-package pl.infoshare.springintroduction.validation;
+package pl.infoshare.springintroduction.validation.exceptions;
 
 import lombok.Value;
 

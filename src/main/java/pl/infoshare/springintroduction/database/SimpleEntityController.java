@@ -36,8 +36,9 @@ public class SimpleEntityController {
     }
 
     @GetMapping("/api/adult-entities")
-    public List<SimpleEntity> getAdultEntities(@RequestParam(required = false) String name) {
-        return simpleEntityRepository.findAll(adultsOnly().and(hasName(name)));
+    public Page<SimpleEntity> getAdultEntities(@RequestParam(required = false) String name,
+                                               Pageable pageable) {
+        return simpleEntityRepository.findAll(adultsOnly().and(hasName(name)), pageable);
 
     }
 

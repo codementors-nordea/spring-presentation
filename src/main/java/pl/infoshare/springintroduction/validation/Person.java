@@ -15,10 +15,15 @@ import java.util.List;
 @Schema(description = "Model osoby")
 public class Person {
 
+    @Min(18)
     int age;
 
     @NotBlank
     @Schema(description = "Imie osoby")
     String name;
+
+    @Valid
+    @NotNull
+    Parent parent;
 
 }
