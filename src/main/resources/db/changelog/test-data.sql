@@ -1,1 +1,0 @@
-insert into example_database(id, description) values (1, 'Some description');
